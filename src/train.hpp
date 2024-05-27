@@ -14,8 +14,8 @@
 static const float learning_rate = 1e-3;
 static const int replaybuffer_maxsize=30000;
 static const int batch_size=512;
-static const int epochs=3000;
-static const int decay_epochs=2000;
+static const int epochs=5000;
+static const int decay_epochs=4000;
 static const float initial_epsilon = 1;
 static const float final_epsilon = 1e-3;
 static const float _gamma=0.99;
@@ -60,7 +60,7 @@ class TetrisForAI:public Tetris{
     std::pair<int,int> get_bumpiness_and_height(); //返回凸起度和高度 
 
     State get_state_prperties();
-    void setRotate();
+    void setRotate() ;
     void moveToBottom();
     Mapping get_next_states();
     

@@ -63,7 +63,6 @@ int main(int argc, char* argv[]) {
 
     const char* saved_path = "trained_models/tetris";
     torch::serialize::InputArchive loaded_archive;
-    torch::jit::script::Module module = torch::jit::load(saved_path);
     model = std::make_shared<DQN>();
     model->load(saved_path);
     model->eval();
@@ -73,7 +72,7 @@ int main(int argc, char* argv[]) {
 
     QTimer timer;
     QObject::connect(&timer, &QTimer::timeout, updateGame);
-    timer.start(100); // 每100毫秒更新一次
+    timer.start(120); // 每120毫秒更新一次
 
     return app.exec();
 }

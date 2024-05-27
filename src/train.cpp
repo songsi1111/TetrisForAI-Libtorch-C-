@@ -205,6 +205,7 @@ void TetrisForAI::setRotate(){
     for (std::size_t i {}; i < squares; ++i) {
       z[i] = k[i]; 
     }
+    
   }
 }
 void TetrisForAI::moveToBottom(){
@@ -219,6 +220,7 @@ void TetrisForAI::moveToBottom(){
   //撞底：给区域赋值
   if( inLimit() ){
     for (std::size_t i {}; i < squares; ++i) {
+      if(k[i].y==1){gameover=true;}
       area[ k[i].y ][ k[i].x ] = color; 
     }
   }
@@ -230,11 +232,6 @@ std::pair<int,bool> TetrisForAI::step(Action& action){
 	//旋转
 	for(int i=0;i<rotations;i++){
 		setRotate();
-	}
-	//偏移
-	int dias=z[1].x-dirx;
-	for(int i=0;i<squares;++i){
-		z[i].x-=dias;
 	}
     //上移
     bool CanMoveUp=true;
@@ -251,10 +248,22 @@ std::pair<int,bool> TetrisForAI::step(Action& action){
         }
         }
     }
+	//偏移
+	int dias=z[1].x-dirx;
+	for(int i=0;i<squares;++i){
+        k[i]=z[i];
+		z[i].x-=dias;
+	}
+    if(inLimit()){
+    for(int i=0;i<squares;++i){
+        z[i]=k[i];
+	}      
+    }
 	moveToBottom();
 	auto old_height=get_bumpiness_and_height().second;
 	auto lines_cleared=setScore();//setScore()设置了游戏结束状态
 	int reward=1+pow(lines_cleared,2)*cols;
+    // int reward=1+ lines_cleared * cols;
 	return std::make_pair(reward,gameover);
 }
 void TetrisForAI::reset() {
@@ -404,16 +413,14 @@ void train(){
 	  optimizer.step();
 	  // 输出训练信息
      std::cout << "Epoch: " << epoch << "/" << epochs << ", Action: " << action << ", Score: " << final_score
-           << ", Tetrominoes: " << final_shapes << ", Cleared lines: " << final_lines <<", Loss: " << loss.item<float>() << std::endl;
+           << ", Tetrominoes: " << final_shapes << ", Cleared lines: " << final_lines <<", Loss: " << loss.item<float>()<< std::endl;// 
         // 保存模型
 		if (epoch > 0 && epoch % save_interval == 0) {
        model->save(save_path + std::string("/tetris_")+ std::to_string(epoch));
 		}
   } 
   model->save(save_path + std::string("/tetris"));
-  //torch::serialize::OutputArchive archive;
-  //archive.save_to(save_path + std::string("/tetris"));
 }
-// int main(int argc , char **argv){
-//     train();
-// }
+int main(int argc , char **argv){
+    train();
+}
